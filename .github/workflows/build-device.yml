@@ -61,12 +61,10 @@ jobs:
           path: ${{ env.TT_UMD_DIR }}
           submodules: recursive
 
-      - name: Set GCC compiler
-        # In case clang is selected, don't set these variables, cmake will find it by default.
-        if: ${{ matrix.image.compiler != 'clang' }}
+      - name: Select Compiler
         run: |
-          echo "CMAKE_C_COMPILER=${{ matrix.image.c }}" >> $GITHUB_ENV
-          echo "CMAKE_CXX_COMPILER=${{ matrix.image.cpp }}" >> $GITHUB_ENV
+          echo "CC=${{ matrix.image.c }}" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.image.cpp }}" >> $GITHUB_ENV
 
       # Build with all components to verify the build passes.
       - name: Build All
@@ -276,8 +274,8 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-          {os: ubuntu-22.04, compiler: gcc-12},
-          {os: ubuntu-24.04, compiler: gcc-12}
+          {os: ubuntu-22.04, compiler: gcc},
+          {os: ubuntu-24.04, compiler: gcc}
         ]
         pkg: [
           {package: deb, distro: ubuntu},
