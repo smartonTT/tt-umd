@@ -10,11 +10,7 @@ The environment is pre-configured with dependencies via `copilot-setup-steps.yml
 To rebuild after making changes:
 
 ```bash
-# Use GCC (set these env vars before cmake, or use clang-17 if available)
-export CMAKE_C_COMPILER=/usr/bin/gcc
-export CMAKE_CXX_COMPILER=/usr/bin/g++
-
-cmake -B build -G Ninja -DTT_UMD_BUILD_ALL=ON
+cmake -B build -G Ninja -DTT_UMD_BUILD_TESTS=ON -DTT_UMD_ENABLE_CLANG_TIDY=OFF
 cmake --build build
 ```
 
