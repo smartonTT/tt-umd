@@ -134,7 +134,7 @@ void SWEmuleChip::dma_read_from_device(void* dst, size_t size, CoreCoord core, u
 
 bool SWEmuleChip::is_mmio_capable() const { return false; }
 
-void SWEmuleChip::start_device() {}
+void SWEmuleChip::start_device(uint32_t) {}
 
 void SWEmuleChip::close_device() {}
 
@@ -172,7 +172,7 @@ void SWEmuleChip::l1_membar(const std::unordered_set<CoreCoord>&) {}
 
 void SWEmuleChip::dram_membar(const std::unordered_set<CoreCoord>&) {}
 
-void SWEmuleChip::dram_membar(const std::unordered_set<uint32_t>&) {}
+void SWEmuleChip::dram_membar(const std::unordered_set<uint32_t>&, uint32_t) {}
 
 void SWEmuleChip::send_tensix_risc_reset(CoreCoord, const TensixSoftResetOptions&) {}
 
