@@ -88,6 +88,19 @@ tt_emule::Core* SWEmuleChip::get_core(tt_xy_pair core_xy) {
 }
 
 void SWEmuleChip::write_to_device(CoreCoord core, const void* src, uint64_t l1_dest, size_t size) {
+    if (this->is_dram_core(core)) {
+        // Hardcoded for Wormhole: 32-byte DRAM alignment.
+        if (l1_dest % 32 != 0) {
+            fprintf(stderr, "[ASAN ERROR] Host-side DRAM Alignment: 0x%lx must be 32-byte aligned\n", l1_dest);
+            abort();
+        }
+    } else {
+        // 2. L1 SCALAR CHECK
+        if (l1_dest % 4 != 0) {
+            fprintf(stderr, "[ASAN ERROR] Host-side L1 Alignment: 0x%lx must be 4-byte aligned\n", l1_dest);
+            abort();
+        }
+    }
     tt_xy_pair key(core.x, core.y);
     tt_emule::Core* target_core = get_core(key);
     std::memcpy(target_core->l1_ptr(static_cast<uint32_t>(l1_dest)), src, size);
