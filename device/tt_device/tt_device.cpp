@@ -299,24 +299,24 @@ void TTDevice::write_regs(volatile uint32_t *dest, const uint32_t *src, uint32_t
     get_pcie_interface()->write_regs(dest, src, word_len);
 }
 
-void TTDevice::read_from_device(void *mem_ptr, tt_xy_pair core, uint64_t addr, size_t size) {
+void TTDevice::read_from_device(void *mem_ptr, tt_xy_pair core, uint64_t addr, size_t size, NocId noc_id) {
     ZoneScopedC(tracy::Color::Orange);
-    device_protocol_->read_from_device(mem_ptr, core, addr, size, get_selected_noc_id());
+    device_protocol_->read_from_device(mem_ptr, core, addr, size, noc_id);
 }
 
-void TTDevice::read_from_device(void *mem_ptr, CoreCoord core, uint64_t addr, size_t size) {
+void TTDevice::read_from_device(void *mem_ptr, CoreCoord core, uint64_t addr, size_t size, NocId noc_id) {
     const SocDescriptor &soc_desc = get_soc_descriptor();
-    read_from_device(mem_ptr, soc_desc.translate_chip_coord_to_translated(core), addr, size);
+    read_from_device(mem_ptr, soc_desc.translate_chip_coord_to_translated(core), addr, size, noc_id);
 }
 
-void TTDevice::write_to_device(const void *mem_ptr, tt_xy_pair core, uint64_t addr, size_t size) {
+void TTDevice::write_to_device(const void *mem_ptr, tt_xy_pair core, uint64_t addr, size_t size, NocId noc_id) {
     ZoneScopedC(tracy::Color::Orange);
-    device_protocol_->write_to_device(mem_ptr, core, addr, size, get_selected_noc_id());
+    device_protocol_->write_to_device(mem_ptr, core, addr, size, noc_id);
 }
 
-void TTDevice::write_to_device(const void *mem_ptr, CoreCoord core, uint64_t addr, size_t size) {
+void TTDevice::write_to_device(const void *mem_ptr, CoreCoord core, uint64_t addr, size_t size, NocId noc_id) {
     const SocDescriptor &soc_desc = get_soc_descriptor();
-    write_to_device(mem_ptr, soc_desc.translate_chip_coord_to_translated(core), addr, size);
+    write_to_device(mem_ptr, soc_desc.translate_chip_coord_to_translated(core), addr, size, noc_id);
 }
 
 void TTDevice::configure_iatu_region(size_t region, uint64_t target, size_t region_size) {
@@ -481,20 +481,21 @@ void TTDevice::deassert_risc_reset(tt_xy_pair core, const RiscType selected_risc
 tt_xy_pair TTDevice::get_arc_core() const { return arc_core; }
 
 void TTDevice::noc_multicast_write(
-    const void *src, size_t size, tt_xy_pair core_start, tt_xy_pair core_end, uint64_t addr) {
+    const void *src, size_t size, tt_xy_pair core_start, tt_xy_pair core_end, uint64_t addr, NocId noc_id) {
     ZoneScopedC(tracy::Color::Orange);
-    get_pcie_interface()->noc_multicast_write(src, size, core_start, core_end, addr, get_selected_noc_id());
+    get_pcie_interface()->noc_multicast_write(src, size, core_start, core_end, addr, noc_id);
 }
 
 void TTDevice::noc_multicast_write(
-    const void *src, size_t size, CoreCoord core_start, CoreCoord core_end, uint64_t addr) {
+    const void *src, size_t size, CoreCoord core_start, CoreCoord core_end, uint64_t addr, NocId noc_id) {
     const SocDescriptor &soc_desc = get_soc_descriptor();
     noc_multicast_write(
         src,
         size,
         soc_desc.translate_chip_coord_to_translated(core_start),
         soc_desc.translate_chip_coord_to_translated(core_end),
-        addr);
+        addr,
+        noc_id);
 }
 
 void TTDevice::dma_write_to_device(const void *src, size_t size, tt_xy_pair core, uint64_t addr) {
